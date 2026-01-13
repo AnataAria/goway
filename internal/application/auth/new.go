@@ -5,10 +5,20 @@ import (
 	security "github.com/AnataAria/goway/internal/port/out/security"
 )
 
-func NewLoginUseCase(
+type AuthUserCase struct {
+	accountRepo    persistAccount.AccountRepository
+	passwordHasher security.PasswordHasher
+	tokenGenerator security.TokenGenerator
+}
+
+func New(
 	accountRepo persistAccount.AccountRepository,
 	passwordHasher security.PasswordHasher,
 	tokenGenerator security.TokenGenerator,
-) *LoginHandler {
-	return NewLoginHandler(accountRepo, passwordHasher, tokenGenerator)
+) *AuthUserCase {
+	return &AuthUserCase{
+		accountRepo:    accountRepo,
+		passwordHasher: passwordHasher,
+		tokenGenerator: tokenGenerator,
+	}
 }

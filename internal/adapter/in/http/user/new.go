@@ -1,20 +1,17 @@
 package user
 
 import (
-	"github.com/AnataAria/goway/internal/application/user"
-	persistUser "github.com/AnataAria/goway/internal/port/out/persistence/user"
+	portUser "github.com/AnataAria/goway/internal/port/in/user"
 )
 
 type UserAdapter struct {
-	userRepo        persistUser.UserRepository
-	registerUseCase *user.RegisterHandler
-	getUserUseCase  *user.GetUserHandler
+	userUseCase portUser.UserUseCase
 }
 
-func NewUserAdapter(userRepo persistUser.UserRepository) *UserAdapter {
+func NewUserAdapter(
+	userUseCase portUser.UserUseCase,
+) *UserAdapter {
 	return &UserAdapter{
-		userRepo:        userRepo,
-		registerUseCase: user.NewRegisterHandler(userRepo),
-		getUserUseCase:  user.NewGetUserHandler(userRepo),
+		userUseCase: userUseCase,
 	}
 }

@@ -3,21 +3,10 @@ package user
 import (
 	domainUser "github.com/AnataAria/goway/internal/domain/user"
 	portUser "github.com/AnataAria/goway/internal/port/in/user"
-	persistUser "github.com/AnataAria/goway/internal/port/out/persistence/user"
 	"github.com/google/uuid"
 )
 
-type RegisterHandler struct {
-	userRepo persistUser.UserRepository
-}
-
-func NewRegisterHandler(userRepo persistUser.UserRepository) *RegisterHandler {
-	return &RegisterHandler{
-		userRepo: userRepo,
-	}
-}
-
-func (h *RegisterHandler) Register(req *portUser.RegisterRequest) (*portUser.RegisterResponse, error) {
+func (h *UserUseCase) Register(req *portUser.RegisterRequest) (*portUser.RegisterResponse, error) {
 	email, err := domainUser.NewEmail(req.Email)
 	if err != nil {
 		return nil, err

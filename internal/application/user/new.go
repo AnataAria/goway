@@ -4,10 +4,12 @@ import (
 	persistUser "github.com/AnataAria/goway/internal/port/out/persistence/user"
 )
 
-func NewRegisterUseCase(userRepo persistUser.UserRepository) *RegisterHandler {
-	return NewRegisterHandler(userRepo)
+type UserUseCase struct {
+	userRepo persistUser.UserRepository
 }
 
-func NewGetUserUseCase(userRepo persistUser.UserRepository) *GetUserHandler {
-	return NewGetUserHandler(userRepo)
+func New(userRepo persistUser.UserRepository) *UserUseCase {
+	return &UserUseCase{
+		userRepo: userRepo,
+	}
 }

@@ -14,7 +14,7 @@ func (h *UserAdapter) Profile(c fuego.ContextNoBody) (GetUserResponse, error) {
 		return GetUserResponse{}, errors.New("")
 	}
 
-	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
+	response, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
 	})
 	if err != nil {

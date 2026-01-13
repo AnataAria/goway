@@ -11,7 +11,7 @@ func (h *UserAdapter) Register(c fuego.ContextWithBody[RegisterRequest]) (Regist
 		return RegisterResponse{}, err
 	}
 
-	response, err := h.registerUseCase.Register(body.toRegisterInput())
+	response, err := h.userUseCase.Register(body.toRegisterInput())
 	if err != nil {
 		return RegisterResponse{}, err
 	}
@@ -22,7 +22,7 @@ func (h *UserAdapter) Register(c fuego.ContextWithBody[RegisterRequest]) (Regist
 func (h *UserAdapter) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
 	userID := c.PathParam("id")
 
-	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
+	response, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
 	})
 	if err != nil {
@@ -35,7 +35,7 @@ func (h *UserAdapter) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
 func (h *UserAdapter) GetUserByID(c fuego.ContextNoBody) (GetUserResponse, error) {
 	userID := c.PathParam("id")
 
-	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
+	response, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
 	})
 

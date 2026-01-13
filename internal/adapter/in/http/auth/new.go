@@ -1,27 +1,17 @@
 package auth
 
 import (
-	"github.com/AnataAria/goway/internal/application/auth"
-	persistAccount "github.com/AnataAria/goway/internal/port/out/persistence/account"
-	security "github.com/AnataAria/goway/internal/port/out/security"
+	portAuth "github.com/AnataAria/goway/internal/port/in/auth"
 )
 
 type AuthAdapter struct {
-	accountRepo    persistAccount.AccountRepository
-	passwordHasher security.PasswordHasher
-	tokenGenerator security.TokenGenerator
-	loginUseCase   *auth.LoginHandler
+	loginUseCase portAuth.LoginUseCase
 }
 
 func NewAuthAdapter(
-	accountRepo persistAccount.AccountRepository,
-	passwordHasher security.PasswordHasher,
-	tokenGenerator security.TokenGenerator,
+	loginUseCase portAuth.LoginUseCase,
 ) *AuthAdapter {
 	return &AuthAdapter{
-		accountRepo:    accountRepo,
-		passwordHasher: passwordHasher,
-		tokenGenerator: tokenGenerator,
-		loginUseCase:   auth.NewLoginHandler(accountRepo, passwordHasher, tokenGenerator),
+		loginUseCase: loginUseCase,
 	}
 }
