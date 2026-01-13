@@ -1,15 +1,19 @@
 package user
 
 type RegisterRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	Email    string
+	Password string
+	Phone    string
+	Address  string
+	Name     string
 }
 
 type RegisterResponse struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	ID      string
+	Email   string
+	Phone   string
+	Address string
+	Name    string
 }
 
 type GetUserRequest struct {
@@ -17,9 +21,11 @@ type GetUserRequest struct {
 }
 
 type GetUserResponse struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	ID      string
+	Email   string
+	Phone   string
+	Address string
+	Name    string
 }
 
 type RegisterUseCase interface {

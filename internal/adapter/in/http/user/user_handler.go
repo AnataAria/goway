@@ -1,50 +1,26 @@
 package user
 
 import (
-	"github.com/AnataAria/goway/internal/application/user"
 	portUser "github.com/AnataAria/goway/internal/port/in/user"
-	persistUser "github.com/AnataAria/goway/internal/port/out/persistence/user"
 	"github.com/go-fuego/fuego"
 )
 
-type UserHandler struct {
-	userRepo        persistUser.UserRepository
-	registerUseCase *user.RegisterHandler
-	getUserUseCase  *user.GetUserHandler
-}
-
-func NewUserHandler(userRepo persistUser.UserRepository) *UserHandler {
-	return &UserHandler{
-		userRepo:        userRepo,
-		registerUseCase: user.NewRegisterUseCase(userRepo),
-		getUserUseCase:  user.NewGetUserUseCase(userRepo),
-	}
-}
-
-func (h *UserHandler) Register(c fuego.ContextWithBody[RegisterRequest]) (RegisterResponse, error) {
+func (h *UserAdapter) Register(c fuego.ContextWithBody[RegisterRequest]) (RegisterResponse, error) {
 	body, err := c.Body()
 	if err != nil {
 		return RegisterResponse{}, err
 	}
 
-	response, err := h.registerUseCase.Register(&portUser.RegisterRequest{
-		Email:    body.Email,
-		Password: body.Password,
-		Name:     body.Name,
-	})
+	response, err := h.registerUseCase.Register(body.toRegisterInput())
 	if err != nil {
 		return RegisterResponse{}, err
 	}
 
-	return RegisterResponse{
-		ID:    response.ID,
-		Email: response.Email,
-		Name:  response.Name,
-	}, nil
+	return toRegisterResponse(response), nil
 }
 
-func (h *UserHandler) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
-	userID := "placeholder-user-id"
+func (h *UserAdapter) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
+	userID := c.PathParam("id")
 
 	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
@@ -53,14 +29,10 @@ func (h *UserHandler) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
 		return GetUserResponse{}, err
 	}
 
-	return GetUserResponse{
-		ID:    response.ID,
-		Email: response.Email,
-		Name:  response.Name,
-	}, nil
+	return toGetUserResponse(response), nil
 }
 
-func (h *UserHandler) GetUserByID(c fuego.ContextNoBody) (GetUserResponse, error) {
+func (h *UserAdapter) GetUserByID(c fuego.ContextNoBody) (GetUserResponse, error) {
 	userID := c.PathParam("id")
 
 	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
@@ -71,9 +43,5 @@ func (h *UserHandler) GetUserByID(c fuego.ContextNoBody) (GetUserResponse, error
 		return GetUserResponse{}, err
 	}
 
-	return GetUserResponse{
-		ID:    response.ID,
-		Email: response.Email,
-		Name:  response.Name,
-	}, nil
+	return toGetUserResponse(response), nil
 }

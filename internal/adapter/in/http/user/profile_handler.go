@@ -1,23 +1,18 @@
 package user
 
 import (
+	portUser "github.com/AnataAria/goway/internal/port/in/user"
 	"github.com/go-fuego/fuego"
 )
 
-func (h *UserHandler) Profile(c fuego.ContextNoBody) (GetUserResponse, error) {
+func (h *UserAdapter) Profile(c fuego.ContextNoBody) (GetUserResponse, error) {
 	userID := c.Context().Value("user_id").(string)
-
-	user, err := h.userRepo.FindByID(userID)
+	response, err := h.getUserUseCase.GetUser(&portUser.GetUserRequest{
+		UserID: userID,
+	})
 	if err != nil {
 		return GetUserResponse{}, err
 	}
-	if user == nil {
-		return GetUserResponse{}, err
-	}
 
-	return GetUserResponse{
-		ID:    user.GetID(),
-		Email: user.GetEmail().Value(),
-		Name:  user.GetName(),
-	}, nil
+	return toGetUserResponse(response), nil
 }
