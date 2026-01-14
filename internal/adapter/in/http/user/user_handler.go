@@ -2,46 +2,47 @@ package user
 
 import (
 	portUser "github.com/AnataAria/goway/internal/port/in/user"
+	"github.com/AnataAria/goway/pkg/response"
 	"github.com/go-fuego/fuego"
 )
 
-func (h *UserAdapter) Register(c fuego.ContextWithBody[RegisterRequest]) (RegisterResponse, error) {
+func (h *UserAdapter) Register(c fuego.ContextWithBody[RegisterRequest]) (*response.Response[RegisterResponse], error) {
 	body, err := c.Body()
 	if err != nil {
-		return RegisterResponse{}, err
+		return nil, err
 	}
 
-	response, err := h.userUseCase.Register(body.toRegisterInput())
+	res, err := h.userUseCase.Register(body.toRegisterInput())
 	if err != nil {
-		return RegisterResponse{}, err
+		return nil, err
 	}
 
-	return toRegisterResponse(response), nil
+	return response.RespondCreated(toRegisterResponse(res)), nil
 }
 
-func (h *UserAdapter) GetUser(c fuego.ContextNoBody) (GetUserResponse, error) {
+func (h *UserAdapter) GetUser(c fuego.ContextNoBody) (*response.Response[GetUserResponse], error) {
 	userID := c.PathParam("id")
 
-	response, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
+	res, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
 	})
 	if err != nil {
-		return GetUserResponse{}, err
+		return nil, err
 	}
 
-	return toGetUserResponse(response), nil
+	return response.RespondOK(toGetUserResponse(res)), nil
 }
 
-func (h *UserAdapter) GetUserByID(c fuego.ContextNoBody) (GetUserResponse, error) {
+func (h *UserAdapter) GetUserByID(c fuego.ContextNoBody) (*response.Response[GetUserResponse], error) {
 	userID := c.PathParam("id")
 
-	response, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
+	res, err := h.userUseCase.GetUser(&portUser.GetUserRequest{
 		UserID: userID,
 	})
 
 	if err != nil {
-		return GetUserResponse{}, err
+		return nil, err
 	}
 
-	return toGetUserResponse(response), nil
+	return response.RespondOK(toGetUserResponse(res)), nil
 }

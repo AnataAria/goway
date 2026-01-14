@@ -1,37 +1,19 @@
 package validator
 
-import (
-	"github.com/go-playground/validator/v10"
-)
+import "github.com/go-playground/validator/v10"
 
-var validate *validator.Validate
-
-func init() {
-	validate = validator.New()
+type CustomValidator struct {
+	v *validator.Validate
 }
 
-func ValidateStruct(s interface{}) error {
-	return validate.Struct(s)
+func New() *CustomValidator {
+	v := validator.New()
+
+	v.RegisterValidation("password", passwordRule)
+
+	return &CustomValidator{v: v}
 }
 
-func GetValidator() *validator.Validate {
-	return validate
-}
-
-type Validator struct {
-	validate *validator.Validate
-}
-
-func New() *Validator {
-	return &Validator{
-		validate: validator.New(),
-	}
-}
-
-func (v *Validator) Validate(data interface{}) error {
-	return v.validate.Struct(data)
-}
-
-func (v *Validator) ValidateVar(data interface{}, tag string) error {
-	return v.validate.Var(data, tag)
+func (cv *CustomValidator) Validator() *validator.Validate {
+	return cv.v
 }

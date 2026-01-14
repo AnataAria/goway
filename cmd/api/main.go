@@ -4,48 +4,47 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/AnataAria/goway/internal/config"
 	"github.com/AnataAria/goway/internal/startup/http"
 	"github.com/AnataAria/goway/pkg/postgres"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		log.Fatalf("Config error: %s", err)
 	}
 
-	ctx, stop := signal.NotifyContext(
-		context.Background(),
-		os.Interrupt,
-		syscall.SIGTERM,
+	ctx := context.Background()
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.DBName,
+		cfg.Database.SSLMode,
 	)
 
-	defer stop()
-
-	pg, err := postgres.New(ctx, postgres.PostgresConfig{
-		DSN: fmt.Sprintf(
-			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
-			cfg.Database.User,
-			cfg.Database.Password,
-			cfg.Database.Host,
-			cfg.Database.Port,
-			cfg.Database.DBName,
-			cfg.Database.SSLMode,
-		),
+	pgConfig := postgres.PostgresConfig{
+		DSN:             dsn,
 		MaxOpenConns:    cfg.Database.MaxOpenConns,
 		MaxIdleConns:    cfg.Database.MaxIdleConns,
-		ConnMaxLifetime: time.Minute * 30,
-	})
-
-	if err != nil {
-		log.Fatalf("failed to create postgres client: %v", err)
+		ConnMaxLifetime: 5 * time.Minute,
 	}
+
+	pg, err := postgres.New(ctx, pgConfig)
+	if err != nil {
+		log.Fatalf("Postgres error: %s", err)
+	}
+	defer pg.Close()
 
 	server := http.NewServer(ctx, pg, cfg)
 	server.SetupHttp()
