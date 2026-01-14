@@ -12,5 +12,5 @@ func SetupUserRoutes(s *fuego.Server, userHandler *UserAdapter, authMiddleware f
 
 	fuego.Post(userGroup, "/register", userHandler.Register)
 	fuego.Get(userGroup, "/profile", userHandler.Profile, option.Middleware(authMiddleware))
-	fuego.Get(userGroup, "/{id}", userHandler.GetUser)
+	fuego.Get(userGroup, "/{id}", userHandler.GetUser, option.Middleware(authMiddleware))
 }
